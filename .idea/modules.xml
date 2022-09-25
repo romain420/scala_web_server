@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/scala_web_server.iml" filepath="$PROJECT_DIR$/.idea/scala_web_server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/scala_web_server_5367.iml" filepath="$PROJECT_DIR$/.idea/modules/scala_web_server_5367.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/scala_web_server_5367-build.iml" filepath="$PROJECT_DIR$/.idea/modules/scala_web_server_5367-build.iml" />
     </modules>
   </component>
 </project>
