@@ -30,6 +30,12 @@ lazy val root = project
               email = "marius.morel@edu.esiee.fr",
               url   = url("https://github.com/usmira")
             ),
+      Developer(
+        id    = "mathieupochon",
+        name  = "Mathieu Pochon",
+        email = "mathieu.pochon@edu.esiee.fr",
+        url   = url("https://github.com/pochonm")
+      )
     ),
     scalaVersion := scala3Version,
     libraryDependencies ++= Seq("org.scalameta" %% "munit" % "0.7.29" % Test)
