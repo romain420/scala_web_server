@@ -18,6 +18,12 @@ lazy val root = project
         email = "theo.gueuret@edu.esiee.fr",
         url   = url("https://github.com/to-grt")
       )
+      Developer(
+        id    = "vithulaksan",
+        name  = "Vithulaksan Naguleswaran",
+        email = "vithulaksan.naguleswaran@edu.esiee.fr",
+        url   = url("https://github.com/vithulaksan")
+      )
     ),
     scalaVersion := scala3Version,
     libraryDependencies ++= Seq("org.scalameta" %% "munit" % "0.7.29" % Test)
