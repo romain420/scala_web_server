@@ -7,10 +7,10 @@ lazy val root = project
     version := "0.1.0-SNAPSHOT",
     developers := List( // TODO: replace the following developer by your team developers
       Developer(
-        id    = "johndoe",
-        name  = "John Doe",
-        email = "john.doe@gmail.com",
-        url   = url("https://github.com/johndoe")
+        id    = "romaindreuilhet",
+        name  = "Romain Dreuilhet",
+        email = "romain.dreuilhet@edu.esiee.fr",
+        url   = url("https://github.com/romain420")
       )
     ),
     scalaVersion := scala3Version,
