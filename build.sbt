@@ -3,9 +3,9 @@ val scala3Version = "3.2.0"
 lazy val root = project
   .in(file("."))
   .settings(
-    name := "WebServer in Scala",
+    name := "My beautiful project", // TODO: name your project
     version := "0.1.0-SNAPSHOT",
-    developers := List(
+    developers := List( // TODO: replace the following developer by your team developers
       Developer(
         id    = "romaindreuilhet",
         name  = "Romain Dreuilhet",
@@ -25,11 +25,11 @@ lazy val root = project
         url   = url("https://github.com/vithulaksan")
       ),
       Developer(
-        id    = "mariusmorel",
-        name  = "Marius Morel",
-        email = "marius.morel@edu.esiee.fr",
-        url   = url("https://github.com/usmira")
-      ),
+              id    = "mariusmorel",
+              name  = "Marius Morel",
+              email = "marius.morel@edu.esiee.fr",
+              url   = url("https://github.com/usmira")
+            ),
       Developer(
         id    = "mathieupochon",
         name  = "Mathieu Pochon",
