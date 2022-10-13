@@ -9,6 +9,14 @@ case class SimpleWebService(serverSocket: ServerSocket,
                             out: PrintWriter,
                             in: BufferedReader) {
 
+  def stop() = {
+    in.close()
+    out.close()
+    clientSocket.close()
+    serverSocket.close()
+    println("Server is closed - Goodbye")
+  }
+
   def get(request: WebRequest): WebResponse = request.toWebResponse
 
   def post(request: WebRequest): WebResponse = WebResponse("0001")

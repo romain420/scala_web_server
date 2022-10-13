@@ -1,20 +1,22 @@
 package webserver
 
-import webserver.library.{SimpleWebService, WebResponse, WebRequest, Test}
+import webserver.library.{Client, SimpleWebService, WebResponse, WebRequest, Test}
 
 @main def hello(): Unit =
   println("Hello world!")
   println(msg)
   
-  val my_test = Test
-  val my_web_server = SimpleWebService(8080)
+  val myTest = Test
+  val myWebServer = SimpleWebService(8080)
+  val firstClient = Client("127.0.0.1", 8080)
 
-  println(my_test.hello)
-  println(my_web_server.get(WebRequest("test1")))
-  println(my_web_server.post(WebRequest("oui2")))
-  println(my_web_server.put(WebRequest("non3")))
-  println(my_web_server.delete(WebRequest("bon4")))
+  println(myTest.hello)
+  println(myWebServer.get(WebRequest("test1")))
+  println(myWebServer.post(WebRequest("oui2")))
+  println(myWebServer.put(WebRequest("non3")))
+  println(myWebServer.delete(WebRequest("bon4")))
 
-  
+  myWebServer.stop()
+
 def msg = "I was compiled by Scala 3. :)"
 
