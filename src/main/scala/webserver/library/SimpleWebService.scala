@@ -43,6 +43,13 @@ object SimpleWebService {
       in = in
     )
 
+    val greeting: String = in.readLine()
+    if("hello server" == greeting){
+      out.println("hello client")
+    }
+    else {
+      out.println("hello stranger")
+    }
     println("Startup done - Hello world!")
     simpleWebService
   }
