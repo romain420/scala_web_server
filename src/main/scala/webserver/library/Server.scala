@@ -9,12 +9,19 @@ import scala.util.{Using}
 case class Server(server: ServerSocket) {
 
   def start: Unit = {
+    println("Waiting for a client...")
     Using(server.accept()) { client =>
       val out = new PrintWriter(client.getOutputStream, true)
       val in = new BufferedReader(new InputStreamReader(client.getInputStream))
       val greeting = in.readLine
-      if ("hello server" == greeting) out.println("hello client")
-      else out.println("unrecognised greeting")
+      if ("hello server" == greeting) {
+        println("Connection with a recognized client")
+        out.println("hello client")
+      }
+      else {
+        println("Connection with an unrecognized client")
+        out.println("unrecognised greeting")
+      }
     }.fold( // fold acts here like an if
       // if we have an error with the client...
       error => println(s">>> client connection failure: ${error.getMessage}"),

@@ -23,7 +23,9 @@ import webserver.library.{Client, Server, WebResponse, WebRequest, Test}
   firstClient.start
 
 @main def clientSideStranger(): Unit =
-  val firstClient = Client("127.0.0.1", 5000, "I send a wrong message")
+  val secondClient = Client("127.0.0.1", 5000, "I send a wrong message")
+  secondClient.start
+
 
 
 
