@@ -3,19 +3,32 @@ package webserver.library
 import webserver.library.{WebRequest, WebResponse}
 import java.net.{ServerSocket, Socket}
 import java.io.{BufferedReader, PrintWriter, InputStreamReader}
+import scala.io.{Source}
+import scala.util.{Using}
+import java.io.BufferedReader
+import java.io.PrintWriter
 
-case class SimpleWebService(serverSocket: ServerSocket,
-                            clientSocket: Socket,
-                            out: PrintWriter,
-                            in: BufferedReader) {
+case class Server(port: Int, server: ServerSocket) {
 
-  def stop() = {
-    in.close()
-    out.close()
-    clientSocket.close()
-    serverSocket.close()
-    println("Server is closed - Goodbye")
+  def start: Unit = {
+    Using(server.accept()) { client =>
+      val out = new PrintWriter(client.getOutputStream, true)
+      val in = new BufferedReader(new InputStreamReader(client.getInputStream))
+      val greeting = in.readLine
+      if ("hello server" == greeting) println("hello client")
+      else println("unrecognised greeting")
+    }.fold( // fold acts here like an if
+      // if we have an error with the client...
+      error => println(s">>> client connection failure: ${error.getMessage}"),
+      // otherwise, we do nothing
+      _ => ()
+    )
   }
+
+  /*
+  val out = new PrintWriter(clientSocket.getOutputStream(), true)
+  val in = new BufferedReader(InputStreamReader(clientSocket.getInputStream()))
+  */
 
   def get(request: WebRequest): WebResponse = request.toWebResponse
 
@@ -26,8 +39,12 @@ case class SimpleWebService(serverSocket: ServerSocket,
   def delete(request: WebRequest): WebResponse = WebResponse("0003")
 }
 
-object SimpleWebService {
-  def apply(port:Int): SimpleWebService = {
+
+object Server {
+  def apply(port:Int): Server = Server(port, new ServerSocket(port))
+}
+  /*
+  def apply(port:Int): Server = {
 
     println("Starting the service :)")
 
@@ -36,7 +53,7 @@ object SimpleWebService {
     val out = new PrintWriter(clientSocket.getOutputStream(), true)
     val in = new BufferedReader(InputStreamReader(clientSocket.getInputStream()))
 
-    val simpleWebService = SimpleWebService(
+    val server = Server(
       serverSocket = serverSocket,
       clientSocket = clientSocket,
       out = out,
@@ -51,6 +68,6 @@ object SimpleWebService {
       out.println("hello stranger")
     }
     println("Startup done - Hello world!")
-    simpleWebService
+    server
   }
-}
+}*/

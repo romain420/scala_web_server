@@ -3,9 +3,12 @@ package webserver.library
 import java.net.{Socket}
 import java.io.{BufferedReader, PrintWriter, InputStreamReader}
 
-case class Client(clientSocket: Socket,
-                  out: PrintWriter,
-                  in: BufferedReader) {
+case class Client(ip: String, port: Int) {
+
+  println("Creation of a Client :)")
+  private val clientSocket = Socket(ip, port)
+  private val out = PrintWriter(clientSocket.getOutputStream(), true)
+  private val in = BufferedReader(InputStreamReader(clientSocket.getInputStream()))
 
   def sendMessage(message: String): String = {
     out.println(message)
@@ -13,13 +16,14 @@ case class Client(clientSocket: Socket,
     resp
   }
 
-  def stopConnetion = {
+  def stopConnection = {
     in.close()
     out.close()
     clientSocket.close()
   }
 }
 
+/*
 object Client {
 
   def apply(ip: String, port: Int): Client = {
@@ -39,4 +43,4 @@ object Client {
     println("Client is created - Hello world :)")
     client
   }
-}
+}*/
