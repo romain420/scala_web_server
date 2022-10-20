@@ -19,16 +19,11 @@ import webserver.library.{Client, Server, WebResponse, WebRequest, Test}
 
 
 @main def clientSide(): Unit =
-
-  val firstClient = Client("127.0.0.1", 5000)
-  val response: String = firstClient.sendMessage("hello server")
-  assert(response == "hello client")
+  val firstClient = Client("127.0.0.1", 5000, "hello server")
+  firstClient.start
 
 @main def clientSideStranger(): Unit =
-
-  val secondClient = Client("127.0.0.2", 5000)
-  val response: String = secondClient.sendMessage("First message from client")
-  assert(response == "hello stranger")
+  val firstClient = Client("127.0.0.1", 5000, "I send a wrong message")
 
 
 

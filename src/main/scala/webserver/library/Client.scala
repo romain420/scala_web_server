@@ -1,46 +1,37 @@
 package webserver.library
 
-import java.net.{Socket}
-import java.io.{BufferedReader, PrintWriter, InputStreamReader}
+import java.net.Socket
+import java.io.{BufferedReader, InputStreamReader, PrintWriter}
+import scala.util.Using
+import scala.util.Using.Releasable
 
-case class Client(ip: String, port: Int) {
+case class Client(ip: String, port: Int, message:String) {
 
-  println("Creation of a Client :)")
-  private val clientSocket = Socket(ip, port)
-  private val out = PrintWriter(clientSocket.getOutputStream(), true)
-  private val in = BufferedReader(InputStreamReader(clientSocket.getInputStream()))
+  def start: Unit = {
 
-  def sendMessage(message: String): String = {
+    Using(new Socket(ip, port)) {
+      socket =>
+        Using(new PrintWriter(socket.getOutputStream(), true)) { out =>
+          Using(new BufferedReader(InputStreamReader(socket.getInputStream()))) { in =>
+            out.println(message)
+            val answer = in.readLine()
+            println(answer)
+          }
+        }
+      //stopConnection(client: Socket, in: BufferedReader, out: PrintWriter)
+    }
+  }
+
+  def sendMessage(message: String, in: BufferedReader, out: PrintWriter): String = {
     out.println(message)
     val resp: String = in.readLine()
     resp
   }
 
-  def stopConnection = {
+  def stopConnection(client: Socket, in: BufferedReader, out: PrintWriter):Unit = {
     in.close()
     out.close()
-    clientSocket.close()
+    client.close()
+    ()
   }
 }
-
-/*
-object Client {
-
-  def apply(ip: String, port: Int): Client = {
-
-    println("Creation of a Client :)")
-
-    val clientSocket = Socket(ip, port)
-    val out = PrintWriter(clientSocket.getOutputStream(), true)
-    val in = BufferedReader(InputStreamReader(clientSocket.getInputStream()))
-
-    val client = Client(
-      clientSocket = clientSocket,
-      out = out,
-      in = in
-    )
-
-    println("Client is created - Hello world :)")
-    client
-  }
-}*/
