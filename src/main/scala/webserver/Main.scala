@@ -13,13 +13,17 @@ val server_port: Int = 8000
   val myServer = Server(server_port)
   myServer.start
 
-@main def clientSide(): Unit =          // a client aht will be recognized by the server
+@main def helloClient(): Unit =          // a client aht will be recognized by the server
   val firstClient = Client("127.0.0.1", server_port, "hello server")
   firstClient.start
 
-@main def clientSideStranger(): Unit =  // a client that will not be recognized by the server
-  val secondClient = Client("127.0.0.1", server_port, "I send a wrong message")
+@main def stopClient(): Unit =  // a client that will not be recognized by the server
+  val secondClient = Client("127.0.0.1", server_port, "stop server")
   secondClient.start
+
+@main def randomClient(): Unit = // a client that will not be recognized by the server
+  val thirdClient = Client("127.0.0.2", server_port, "I send a random message")
+  thirdClient.start
 
 
 
