@@ -7,7 +7,7 @@ case class WebRequest(method: String, path: String, version: String, host: Strin
     str
   }
 
-  def debugMembers: Unit = {
+  def debugMembers(): Unit = {
     println("---------------\nDescription of the WebRequest:")
     println(s"method: $method")
     println(s"path: $path")

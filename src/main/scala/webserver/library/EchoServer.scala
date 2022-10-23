@@ -9,25 +9,24 @@ import scala.util.control.Breaks._
 
 case class EchoServer(server: ServerSocket) {
 
-  def start_rec: Unit = {
+  def start_rec(): Unit = {
     println(s"\nWaiting for a new client to connect...")
     val connexion = Using(server.accept()) { client =>
       processMessage(client) // returns a boolean: true to stop the loop, else false
     }
     connexion match {
-      case Success(res) => {
+      case Success(res) =>
         if (res) ()
-        else start_rec
-      }
-      case Failure(res) => {
+        else start_rec()
+      case Failure(res) =>
         println(s">>> client connection failure: ${res.getMessage}")
-      }
     }
     ()
   }
 
   // DEPRECATED
-  def start: Unit = {   // Don't use that anymore, use start_rec instead
+  /*
+  def start(): Unit = {   // Don't use that anymore, use start_rec instead
     while(true) {
       println(s"\nWaiting for a new client to connect...")
       Using(server.accept()) { client =>
@@ -43,7 +42,7 @@ case class EchoServer(server: ServerSocket) {
         }
       )
     }
-  }
+  }*/
 
   def processMessage(client: Socket): Boolean = {
     Using(new BufferedReader(new InputStreamReader(client.getInputStream))) { in =>
@@ -52,16 +51,18 @@ case class EchoServer(server: ServerSocket) {
       println(s">>> I received the following message:\t\"$message\"")
       println(s">>> is this detected as a request? $isRequest")
       //println(s"We check of the Socket is still open, is Socket open in processMessage? ${client.isConnected()}")
-      isRequest match
-        case true => handleRequest(client, message)      // if it is a request...
-        case false => handleMessage(client, message)     // and if it is not a request, so a lambda message...
+      if (isRequest) {
+        handleRequest(client, message)
+      } else {
+        handleMessage(client, message)
+      }     // and if it is not a request, so a lambda message...
     }.fold(
       error => {
         println(s">>> cannot acquire the 'in', check the inputSteam of server: ${error.getMessage}")
         closeServer()
       },
       resp => {
-        if(resp == true) true
+        if(resp) true
         else false
       }
     )
@@ -69,21 +70,18 @@ case class EchoServer(server: ServerSocket) {
 
   def handleMessage(client: Socket, message: String): Boolean = {
     message match {
-      case "hello server" => {
+      case "hello server" =>
         println(s">>> we will try to send a hello back...")
         sendMessage(client, s"Hello client, you are on port ${client.getPort} we hear you now")
         false     // no reason to stop the server
-      }
-      case "stop server" => {
+      case "stop server" =>
         println(s">>> we will try to send a closing announce")
         sendMessage(client, s"Copy, we are closing the server")
         closeServer()  // returns true
-      }
-      case _ => {
+      case _ =>
         println(s">>> we will try to send the message back")
         sendMessage(client, s"I am going to send your message back:\t\"$message\"")
         false     // no reason to stop the server
-      }
     }
   }
 
@@ -112,7 +110,7 @@ case class EchoServer(server: ServerSocket) {
   }
 
 
-  def messageIsRequest(message: String): Boolean = { // very basic test of the request, can be easily misrouted
+  def messageIsRequest(message: String): Boolean = { // very basic test of the request, can be easily miss-routed
 
     val list_method: List[String] = List("GET", "PUT", "DELETE", "POST")
     val split = message.split(" ")

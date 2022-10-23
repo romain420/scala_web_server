@@ -12,7 +12,7 @@ case class Client(ip: String, port: Int, message: String) {
       processCommunication(serverSocket, message)
     }.fold(
       error => {
-        println("Could not connect to the server, please check the Socket(ip and port) on the client side or that the server is on :).")
+        println(s"Could not connect to the server, please check the Socket(ip and port) on the client side or that the server is on :). Error: ${error.getMessage}")
       },
       _ => ()
     )
@@ -43,6 +43,7 @@ case class Client(ip: String, port: Int, message: String) {
   }
 
   // DEPRECATED
+  /*
   def processRequest(): Unit = {    // do not use that anymore, use createSendRequest instead
     Using(new Socket(ip, port)) { serverSocket =>
       val request = createRandomRequest()
@@ -53,18 +54,18 @@ case class Client(ip: String, port: Int, message: String) {
       },
       _ => ()
     )
-  }
+  }*/
 
   def createSendRequest(): Unit = {
     val request: WebRequest = createRandomRequest()
-    request.debugMembers
+    request.debugMembers()
     val requestString: String = request.toString
 
     Using(new Socket(ip, port)) { serverSocket =>
       processCommunication(serverSocket, requestString)
     }.fold(
       error => {
-        println("Could not connect to the server, please check the Socket(ip and port) on the client side or that the server is on :).")
+        println(s"Could not connect to the server, please check the Socket(ip and port) on the client side or that the server is on :). Error: ${error.getMessage}")
       },
       _ => ()
     )

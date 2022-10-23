@@ -7,7 +7,7 @@ val server_port: Int = 8000
 
 @main def recServer(): Unit =
   val myRecServer = EchoServer(server_port)
-  myRecServer.start_rec
+  myRecServer.start_rec()
 
 /* DEPRECATED
 @main def serverSide(): Unit =          // same as server but infinite loop for service
