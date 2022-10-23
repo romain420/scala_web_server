@@ -22,9 +22,6 @@ case class EchoServer(server: ServerSocket) {
       case Failure(res) => {
         println(s">>> client connection failure: ${res.getMessage}")
       }
-      case res => {
-        ()
-      }
     }
     ()
   }
