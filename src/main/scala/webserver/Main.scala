@@ -1,30 +1,47 @@
 package webserver
 
-import webserver.library.{Client, Server, WebResponse, WebRequest, Test}
-
-@main def serverSide(): Unit =
-  //println("Hello world!")
-  //println(msg)
-
-  //val myTest = Test
-  val myWebServer = Server(5000)
-  myWebServer.start
-  //println(myTest.hello)
-  //println(myWebServer.get(WebRequest("test1")))
-  //println(myWebServer.post(WebRequest("oui2")))
-  //println(myWebServer.put(WebRequest("non3")))
-  //println(myWebServer.delete(WebRequest("bon4")))
-  //myWebServer.stop()
-//def msg = "I was compiled by Scala 3. :)"
+import webserver.library.{Client, Server, WebResponse, WebRequest, EchoServer, Test}
 
 
-@main def clientSide(): Unit =
-  val firstClient = Client("127.0.0.1", 5000, "hello server")
+val server_port: Int = 8000
+
+@main def recServer(): Unit =
+  val myRecServer = EchoServer(server_port)
+  myRecServer.start_rec
+
+/* DEPRECATED
+@main def serverSide(): Unit =          // same as server but infinite loop for service
+  val myEchoServer = EchoServer(server_port)
+  myEchoServer.start
+*/
+
+@main def serverTestSide(): Unit =      // one time use
+  val myServer = Server(server_port)
+  myServer.start
+
+@main def helloClient(): Unit =          // a client aht will be recognized by the server
+  val firstClient = Client("localhost", server_port, "hello server")
   firstClient.start
 
-@main def clientSideStranger(): Unit =
-  val secondClient = Client("127.0.0.1", 5000, "I send a wrong message")
+@main def stopClient(): Unit =  // a client that will not be recognized by the server
+  val secondClient = Client("localhost", server_port, "stop server")
   secondClient.start
+
+@main def randomClient(): Unit = // a client that will not be recognized by the server
+  val thirdClient = Client("localhost", server_port, "I send a random message")
+  thirdClient.start
+
+@main def multipleClient(): Unit = // multiple clients at the same time
+  val client1 =  Client("localhost", server_port, "client1")
+  val client2 =  Client("localhost", server_port, "client2")
+  client1.start
+  client2.start
+
+@main def requestClient(): Unit =
+  val fourthClient = Client("localhost", server_port, "useless message")
+  fourthClient.processRequest
+
+
 
 
 
