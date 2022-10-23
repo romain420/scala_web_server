@@ -4,12 +4,32 @@ import webserver.library.{WebRequest, WebResponse}
 import java.net.{ServerSocket, Socket}
 import java.io.{BufferedReader, PrintWriter, InputStreamReader}
 import scala.io.Source
-import scala.util.Using
+import scala.util.{Using, Try, Success, Failure}
 import scala.util.control.Breaks._
 
 case class EchoServer(server: ServerSocket) {
 
-  def start: Unit = {
+  def start_rec: Unit = {
+    println(s"\nWaiting for a new client to connect...")
+    val connexion = Using(server.accept()) { client =>
+      processMessage(client) // returns a boolean: true to stop the loop, else false
+    }
+    connexion match {
+      case Success(res) => {
+        if (res) ()
+        else start_rec
+      }
+      case Failure(res) => {
+        println(s">>> client connection failure: ${res.getMessage}")
+      }
+      case res => {
+        ()
+      }
+    }
+    ()
+  }
+
+  def start: Unit = {   // Don't use that anymore, use start_rec instead
     while(true) {
       println(s"\nWaiting for a new client to connect...")
       Using(server.accept()) { client =>

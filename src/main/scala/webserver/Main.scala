@@ -5,9 +5,15 @@ import webserver.library.{Client, Server, WebResponse, WebRequest, EchoServer, T
 
 val server_port: Int = 8000
 
+@main def recServer(): Unit =
+  val myRecServer = EchoServer(server_port)
+  myRecServer.start_rec
+
+/* DEPRECATED
 @main def serverSide(): Unit =          // same as server but infinite loop for service
   val myEchoServer = EchoServer(server_port)
   myEchoServer.start
+*/
 
 @main def serverTestSide(): Unit =      // one time use
   val myServer = Server(server_port)
@@ -34,6 +40,8 @@ val server_port: Int = 8000
 @main def requestClient(): Unit =
   val fourthClient = Client("localhost", server_port, "useless message")
   fourthClient.processRequest
+
+
 
 
 
