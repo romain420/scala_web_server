@@ -30,13 +30,14 @@ case class Server(server: ServerSocket) {
     )
   }
 
+  /* commented for now
   def get(request: WebRequest): WebResponse = request.toWebResponse
 
   def post(request: WebRequest): WebResponse = WebResponse("0001")
 
   def put(request: WebRequest): WebResponse = WebResponse("0002")
 
-  def delete(request: WebRequest): WebResponse = WebResponse("0003")
+  def delete(request: WebRequest): WebResponse = WebResponse("0003")*/
 }
 
 object Server {

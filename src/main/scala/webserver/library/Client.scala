@@ -7,19 +7,7 @@ import scala.util.Using.Releasable
 
 case class Client(ip: String, port: Int, message: String) {
 
-  def processRequest: Unit = {
-    Using(new Socket(ip, port)) { serverSocket =>
-      val request = createRandomRequest()
-      println(s"the new random request is:\n\n$request")
-    }.fold(
-      error => {
-        println("Could not connect to the server, please check the Socket(ip and port) on the client side or that the server is on :).")
-      },
-      _ => ()
-    )
-  }
-
-  def start: Unit = {
+  def start(): Unit = {
     Using(new Socket(ip, port)) { serverSocket =>
       processCommunication(serverSocket, message)
     }.fold(
@@ -33,8 +21,8 @@ case class Client(ip: String, port: Int, message: String) {
   def processCommunication(serverSocket: Socket, message: String): Unit = {
 
     Using(new PrintWriter(serverSocket.getOutputStream, true)) { out =>
-      println(s"Message sent to server")
       out.println(message)
+      println(s"Message sent to server")
       Using(new BufferedReader(InputStreamReader(serverSocket.getInputStream))) { in =>
         //println(s"We check of the Socket is still open, is Socket open in processCommunication? ${serverSocket.isConnected()}")
         val answer: String = in.readLine
@@ -54,17 +42,54 @@ case class Client(ip: String, port: Int, message: String) {
     ()
   }
 
-  def createRandomRequest(): String = {
+  // DEPRECATED
+  def processRequest(): Unit = {    // do not use that anymore, use createSendRequest instead
+    Using(new Socket(ip, port)) { serverSocket =>
+      val request = createRandomRequest()
+      println(s"the new random request is:\n\n$request")
+    }.fold(
+      error => {
+        println("Could not connect to the server, please check the Socket(ip and port) on the client side or that the server is on :).")
+      },
+      _ => ()
+    )
+  }
+
+  def createSendRequest(): Unit = {
+    val request: WebRequest = createRandomRequest()
+    request.debugMembers
+    val requestString: String = request.toString
+
+    Using(new Socket(ip, port)) { serverSocket =>
+      processCommunication(serverSocket, requestString)
+    }.fold(
+      error => {
+        println("Could not connect to the server, please check the Socket(ip and port) on the client side or that the server is on :).")
+      },
+      _ => ()
+    )
+
+  }
+
+  def createRandomRequest(): WebRequest = {
 
     /*
-    template for a request:
+    request template:
     GET /index.html HTTP/1.1 <CRLF>
     Host: localhost <CRLF>
     <CRLF>
     */
-    val list_commands: List[String] = List("GET /users", "GET /users/42", "GET /users?name=Jon", "POST /users/23", "PUT /users/23", "DELETE /users/23")
+
     val random = new Random
-    val result: String = list_commands(random.nextInt(list_commands.length)) + " HTTP/1.1\r\nHost: localhost\r\n\r\n"
-    result
+    val list_method: List[String] = List("GET", "PUT", "DELETE", "POST")
+
+    val method = list_method(random.nextInt(list_method.length))
+    val path = "/users"
+    val version = "HTTP/1.1"
+    val host = "localhost"
+    val message = "random message"
+    val request = WebRequest(method, path, version, host, message)
+
+    request
   }
 }
