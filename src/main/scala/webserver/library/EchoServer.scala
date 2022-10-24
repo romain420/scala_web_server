@@ -94,21 +94,25 @@ case class EchoServer(server: ServerSocket) {
       case "GET" =>
         println(">>> GET")
         val response = createRequestResponse(method, description = "jaaj")
+        println(s"response = \n$response")
         sendMessage(client, response)
         false
       case "PUT" =>
         println(s">>> PUT")
         val response = createRequestResponse(method, description = "jaaj")
+        println(s"response = \n$response")
         sendMessage(client, response)
         false
       case "DELETE" =>
         println(s">>> DELETE")
         val response = createRequestResponse(method, description = "jaaj")
+        println(s"response = \n$response")
         sendMessage(client, response)
         false
       case "POST" =>
         println(s">>> POST")
         val response = createRequestResponse(method, description = "jaaj")
+        println(s"response = \n$response")
         sendMessage(client, response)
         false
     }
@@ -147,7 +151,7 @@ case class EchoServer(server: ServerSocket) {
   def createRequestResponse(code: String, description: String): String = {
     val timeInMillis = System.currentTimeMillis()
     val currentDate = Instant.ofEpochMilli(timeInMillis)
-    val requestResponse: String = s"\r\nHTTP/1.1 \"$code\" \"$description\" \r\nDate: \"$currentDate\" \r\nContent-Type: plain/text \r\nContent: \r\n\"$description\""
+    val requestResponse: String = s"HTTP/1.1 \"$code\" \"$description\" \r\nDate: \"$currentDate\" \r\nContent-Type: plain/text \r\nContent: \r\n\"$description\""
     requestResponse
   }
 
