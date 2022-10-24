@@ -6,6 +6,8 @@ import java.io.{BufferedReader, PrintWriter, InputStreamReader}
 import scala.io.Source
 import scala.util.{Using, Try, Success, Failure}
 import scala.util.control.Breaks._
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 case class EchoServer(server: ServerSocket) {
 
@@ -86,7 +88,31 @@ case class EchoServer(server: ServerSocket) {
   }
 
   def handleRequest(client: Socket, request: String): Boolean = { // TODO should send back a String that in the same format as WebResponse
-    false
+    val list_method: List[String] = List("GET", "PUT", "DELETE", "POST")
+    val split = request.split(" ")
+    val method = split.apply(0)
+    method match {
+      case "GET" =>
+        println(">>> GET")
+        val response = createRequestResponse(method, description = "jaaj")
+        sendMessage(client, response)
+        false
+      case "PUT" =>
+        println(s">>> PUT")
+        val response = createRequestResponse(method, description = "jaaj")
+        sendMessage(client, response)
+        false
+      case "DELETE" =>
+        println(s">>> DELETE")
+        val response = createRequestResponse(method, description = "jaaj")
+        sendMessage(client, response)
+        false
+      case "POST" =>
+        println(s">>> POST")
+        val response = createRequestResponse(method, description = "jaaj")
+        sendMessage(client, response)
+        false
+    }
   }
 
   def sendMessage(client: Socket, message: String): Unit = {
@@ -119,6 +145,17 @@ case class EchoServer(server: ServerSocket) {
     else false
   }
 
+  def createRequestResponse(code: String, description: String): String = {
+    val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.RFC_1123_DATE_TIME
+    val requestResponse: String = s"HTTP/1.1 \"$code\" \"$description\" \r\n Date:  \"$dateTimeFormatter.format(ZonedDateTime.now()\" \r\n Content-Type: plain/text \r\n \r\n \"$description\""
+    requestResponse
+  }
+  /*HTTP/1.1 200 OK <CRLF>
+    Date: Tue, 6 Sep 2022 14:01:07 +0200 <CRLF>
+      Content-Type: plain/text <CRLF>
+        <CRLF>
+          OK
+  */
   /* commented for now
   def get(request: WebRequest): WebResponse = request.toWebResponse
 
