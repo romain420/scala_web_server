@@ -6,8 +6,7 @@ import java.io.{BufferedReader, PrintWriter, InputStreamReader}
 import scala.io.Source
 import scala.util.{Using, Try, Success, Failure}
 import scala.util.control.Breaks._
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
+import java.time.Instant
 
 case class EchoServer(server: ServerSocket) {
 
@@ -146,16 +145,12 @@ case class EchoServer(server: ServerSocket) {
   }
 
   def createRequestResponse(code: String, description: String): String = {
-    val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.RFC_1123_DATE_TIME
-    val requestResponse: String = s"HTTP/1.1 \"$code\" \"$description\" \r\n Date:  \"$dateTimeFormatter.format(ZonedDateTime.now()\" \r\n Content-Type: plain/text \r\n \r\n \"$description\""
+    val timeInMillis = System.currentTimeMillis()
+    val currentDate = Instant.ofEpochMilli(timeInMillis)
+    val requestResponse: String = s"\r\nHTTP/1.1 \"$code\" \"$description\" \r\nDate: \"$currentDate\" \r\nContent-Type: plain/text \r\nContent: \r\n\"$description\""
     requestResponse
   }
-  /*HTTP/1.1 200 OK <CRLF>
-    Date: Tue, 6 Sep 2022 14:01:07 +0200 <CRLF>
-      Content-Type: plain/text <CRLF>
-        <CRLF>
-          OK
-  */
+
   /* commented for now
   def get(request: WebRequest): WebResponse = request.toWebResponse
 
