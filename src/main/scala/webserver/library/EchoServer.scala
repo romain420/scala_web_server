@@ -155,6 +155,7 @@ case class EchoServer(server: ServerSocket) {
     requestResponse
   }
 
+
   /* commented for now
   def get(request: WebRequest): WebResponse = request.toWebResponse
 
