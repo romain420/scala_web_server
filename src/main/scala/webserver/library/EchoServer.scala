@@ -20,6 +20,7 @@ case class EchoServer(server: ServerSocket) {
         if (res) ()
         else start_rec()
       case Failure(res) =>
+        println(">>> 500: Internal Server Error ")
         println(s">>> client connection failure: ${res.getMessage}")
     }
     ()
@@ -59,6 +60,7 @@ case class EchoServer(server: ServerSocket) {
       }     // and if it is not a request, so a lambda message...
     }.fold(
       error => {
+        println(">>> 500: Internal Server Error ")
         println(s">>> cannot acquire the 'in', check the inputSteam of server: ${error.getMessage}")
         closeServer()
       },
@@ -80,6 +82,7 @@ case class EchoServer(server: ServerSocket) {
         sendMessage(client, s"Copy, we are closing the server")
         closeServer()  // returns true
       case _ =>
+        println(">>> 500: Internal Server Error ")
         println(s">>> we will try to send the message back")
         sendMessage(client, s"I am going to send your message back:\t\"$message\"")
         false     // no reason to stop the server
@@ -94,25 +97,21 @@ case class EchoServer(server: ServerSocket) {
       case "GET" =>
         println(">>> GET")
         val response = createRequestResponse(method, description = "jaaj")
-        println(s"response = \n$response")
         sendMessage(client, response)
         false
       case "PUT" =>
         println(s">>> PUT")
         val response = createRequestResponse(method, description = "jaaj")
-        println(s"response = \n$response")
         sendMessage(client, response)
         false
       case "DELETE" =>
         println(s">>> DELETE")
         val response = createRequestResponse(method, description = "jaaj")
-        println(s"response = \n$response")
         sendMessage(client, response)
         false
       case "POST" =>
         println(s">>> POST")
         val response = createRequestResponse(method, description = "jaaj")
-        println(s"response = \n$response")
         sendMessage(client, response)
         false
     }
@@ -125,6 +124,7 @@ case class EchoServer(server: ServerSocket) {
       out.println(message)
     }.fold(
       error => {
+        println(">>> 500: Internal Server Error ")
         println(s">>> could not send the message, check the OutputStream of server: ${error.getMessage}")
         closeServer()
       },
@@ -151,7 +151,7 @@ case class EchoServer(server: ServerSocket) {
   def createRequestResponse(code: String, description: String): String = {
     val timeInMillis = System.currentTimeMillis()
     val currentDate = Instant.ofEpochMilli(timeInMillis)
-    val requestResponse: String = s"HTTP/1.1 \"$code\" \"$description\" \r\nDate: \"$currentDate\" \r\nContent-Type: plain/text \r\nContent: \r\n\"$description\""
+    val requestResponse: String = s"HTTP/1.1 \"$code\" \"$description\" Date: \"$currentDate\" Content-Type: plain/text Content: \"$description\""
     requestResponse
   }
 
