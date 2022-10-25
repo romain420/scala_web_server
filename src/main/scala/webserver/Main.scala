@@ -1,4 +1,4 @@
-package webserver
+  package webserver
 
 import webserver.library.{Client, Server, WebResponse, WebRequest, EchoServer, Test}
 
@@ -39,8 +39,11 @@ val server_port: Int = 8000
 
 @main def requestClient(): Unit =
   val fourthClient = Client("localhost", server_port, "useless message")
-  fourthClient.createSendRequest()
+//  fourthClient.createSendRequest()
 
+@main def nameRequestClient(): Unit =
+  val fifthClient = Client("localhost", server_port, "Bienvenue sur le serv")
+  fifthClient.createSendRequest(fifthClient.createNameRequest(name = "JM-Tech"))
 
 
 

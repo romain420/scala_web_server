@@ -60,8 +60,8 @@ case class Client(ip: String, port: Int, message: String) {
     )
   }*/
 
-  def createSendRequest(): Unit = {
-    val request: WebRequest = createRandomRequest()
+  def createSendRequest(requestType: WebRequest): Unit = {
+    val request: WebRequest = requestType
     request.debugMembers()
     val requestString: String = request.toString
 
@@ -77,6 +77,10 @@ case class Client(ip: String, port: Int, message: String) {
     )
 
   }
+  
+//  def nameSendRequest(): Unit ={
+//    val request: WebRequest = createNameRequest(name = "JM Tech")
+//  }
 
   def createRandomRequest(): WebRequest = {
 
@@ -96,6 +100,16 @@ case class Client(ip: String, port: Int, message: String) {
     val host = "localhost"
     val message = "random message"
     val request = WebRequest(method, path, version, host, message)
+
+    request
+  }
+
+  def createNameRequest(name: String): WebRequest = {
+    val method = "GET"
+    val path = "name"
+    val version = "HTTP/1.1"
+    val host = "localhost"
+    val request = WebRequest(method, path, version, host, name)
 
     request
   }

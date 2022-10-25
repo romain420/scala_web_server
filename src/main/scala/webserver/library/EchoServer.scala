@@ -56,7 +56,7 @@ case class EchoServer(server: ServerSocket) {
   def processMessage(client: Socket): Boolean = {
     Using(new BufferedReader(new InputStreamReader(client.getInputStream))) { in =>
       val message = in.readLine
-      val isRequest = messageIsRequest(message)
+      val isRequest = messageIsNameRequest(message)
       println(s">>> I received the following message:\t\"$message\"")
       println(s">>> is this detected as a request? $isRequest")
       //println(s"We check of the Socket is still open, is Socket open in processMessage? ${client.isConnected()}")
@@ -99,26 +99,28 @@ case class EchoServer(server: ServerSocket) {
   def handleRequest(client: Socket, request: String): Boolean = { // TODO should send back a String that in the same format as WebResponse
     val list_method: List[String] = List("GET", "PUT", "DELETE", "POST")
     val split = request.split(" ")
+    val path = split.apply(1)
     val method = split.apply(0)
+    val name = split.last
     method match {
       case "GET" =>
-        println(">>> GET")
-        val response = createRequestResponse(method, description = "jaaj")
+        println(">>> GET name")
+        val response = createRequestResponse(method, path, description = s"{'reponse':'bonjour à toi $name'}")
         sendMessage(client, response)
         false
       case "PUT" =>
         println(s">>> PUT")
-        val response = createRequestResponse(method, description = "jaaj")
+        val response = createRequestResponse(method, path = "", description = "{'reponse':'bonjour du serveur'}")
         sendMessage(client, response)
         false
       case "DELETE" =>
         println(s">>> DELETE")
-        val response = createRequestResponse(method, description = "jaaj")
+        val response = createRequestResponse(method, path = "", description = "{'reponse':'bonjour du serveur'}")
         sendMessage(client, response)
         false
       case "POST" =>
         println(s">>> POST")
-        val response = createRequestResponse(method, description = "jaaj")
+        val response = createRequestResponse(method, path = "", description = "{'reponse':'bonjour du serveur'}")
         sendMessage(client, response)
         false
     }
@@ -146,21 +148,32 @@ case class EchoServer(server: ServerSocket) {
   }
 
 
-  def messageIsRequest(message: String): Boolean = { // very basic test of the request, can be easily miss-routed
+//  def messageIsRequest(message: String): Boolean = { // very basic test of the request, can be easily miss-routed
+//
+//    val list_method: List[String] = List("GET", "PUT", "DELETE", "POST")
+//    val split = message.split(" ")
+//    val method = split.apply(0)
+//    if(list_method.contains(method)) true
+//    else false
+//  }
 
-    val list_method: List[String] = List("GET", "PUT", "DELETE", "POST")
-    val split = message.split(" ")
-    val method = split.apply(0)
-    if(list_method.contains(method)) true
-    else false
-  }
+    def messageIsNameRequest(message: String): Boolean = { // very basic test of the request, can be easily miss-routed
 
-  def createRequestResponse(code: String, description: String): String = {
+      val splitMethod = message.split(" ")
+      val method = splitMethod.apply(0)
+      val name = splitMethod.apply(1)
+      if (method == "GET" && name == "name") true
+      else false
+    }
+
+  def createRequestResponse(code: String, path: String, description: String): String = {
     val timeInMillis = System.currentTimeMillis()
     val currentDate = Instant.ofEpochMilli(timeInMillis)
-    val requestResponse: String = s"HTTP/1.1 \"$code\" \"$description\" Date: \"$currentDate\" Content-Type: plain/text Content: \"$description\""
+    val requestResponse: String = s"HTTP/1.1 \"$code\" \"$path\" Date: \"$currentDate\" Content-Type: plain/text Content: \"$description\""
     requestResponse
   }
+
+
 
 
   /* commented for now
