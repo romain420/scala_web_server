@@ -1,7 +1,7 @@
 package webserver.library
 
 import webserver.library.{WebRequest, WebResponse}
-import java.net.{ServerSocket, Socket}
+import java.net.{ServerSocket, Socket, InetAddress}
 import java.io.{BufferedReader, PrintWriter, InputStreamReader}
 import scala.io.Source
 import scala.util.{Using, Try, Success, Failure}
@@ -11,7 +11,14 @@ import java.time.Instant
 case class EchoServer(server: ServerSocket) {
 
   def start_rec(): Unit = {
+    val localhost: InetAddress = InetAddress.getLocalHost
+    val localIpAddress: String = localhost.getHostAddress
+    val servPort: Int = server.getLocalPort
+
     println(s"\nWaiting for a new client to connect...")
+    println(s"\r\nServer adress:\n\t$localIpAddress:$servPort")
+    println(s"\tLocalhost:$servPort\n")
+
     val connexion = Using(server.accept()) { client =>
       processMessage(client) // returns a boolean: true to stop the loop, else false
     }
