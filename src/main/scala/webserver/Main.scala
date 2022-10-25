@@ -1,19 +1,12 @@
-  package webserver
+package webserver
 
 import webserver.library.{Client, Server, WebResponse, WebRequest, EchoServer, Test}
-
 
 val server_port: Int = 8000
 
 @main def recServer(): Unit =
   val myRecServer = EchoServer(server_port)
   myRecServer.start_rec()
-
-/* DEPRECATED
-@main def serverSide(): Unit =          // same as server but infinite loop for service
-  val myEchoServer = EchoServer(server_port)
-  myEchoServer.start
-*/
 
 @main def serverTestSide(): Unit =      // one time use
   val myServer = Server(server_port)
@@ -39,11 +32,11 @@ val server_port: Int = 8000
 
 @main def requestClient(): Unit =
   val fourthClient = Client("localhost", server_port, "useless message")
-//  fourthClient.createSendRequest()
+  fourthClient.createSendRequest()
 
 @main def nameRequestClient(): Unit =
   val fifthClient = Client("localhost", server_port, "Bienvenue sur le serv")
-  fifthClient.createSendRequest(fifthClient.createNameRequest(name = "JM-Tech"))
+  fifthClient.createSendNameRequest("JM-Tech")
 
 
 

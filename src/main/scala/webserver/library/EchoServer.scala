@@ -33,34 +33,18 @@ case class EchoServer(server: ServerSocket) {
     ()
   }
 
-  // DEPRECATED
-  /*
-  def start(): Unit = {   // Don't use that anymore, use start_rec instead
-    while(true) {
-      println(s"\nWaiting for a new client to connect...")
-      Using(server.accept()) { client =>
-        //println(s"We check of the Socket is still open, is Socket open in start? ${client.isConnected()}")
-        processMessage(client) // returns a boolean: true to stop the loop, else false
-      }.fold(
-        error => {
-          println(s">>> client connection failure: ${error.getMessage}")
-        },
-        resp => {
-          if(resp) break
-          else ()
-        }
-      )
-    }
-  }*/
-
   def processMessage(client: Socket): Boolean = {
     Using(new BufferedReader(new InputStreamReader(client.getInputStream))) { in =>
       val message = in.readLine
-      val isRequest = messageIsNameRequest(message)
+      val isRequest = messageIsRequest(message)
+      val isNameRequest = messageIsNameRequest(message)
       println(s">>> I received the following message:\t\"$message\"")
       println(s">>> is this detected as a request? $isRequest")
+      println(s">>> is this detected as a nameRequest? $isNameRequest")
       //println(s"We check of the Socket is still open, is Socket open in processMessage? ${client.isConnected()}")
-      if (isRequest) {
+      if (isNameRequest) {
+        handleNameRequest(client, message)
+      } else if (isRequest) {
         handleRequest(client, message)
       } else {
         handleMessage(client, message)
@@ -96,8 +80,7 @@ case class EchoServer(server: ServerSocket) {
     }
   }
 
-  def handleRequest(client: Socket, request: String): Boolean = { // TODO should send back a String that in the same format as WebResponse
-    val list_method: List[String] = List("GET", "PUT", "DELETE", "POST")
+  def handleNameRequest(client: Socket, request: String): Boolean = {
     val split = request.split(" ")
     val path = split.apply(1)
     val method = split.apply(0)
@@ -126,6 +109,34 @@ case class EchoServer(server: ServerSocket) {
     }
   }
 
+  def handleRequest(client: Socket, request: String): Boolean = {
+    val split = request.split(" ")
+    val path = split.apply(1)
+    val method = split.apply(0)
+    method match {
+      case "GET" =>
+        println(">>> GET")
+        val response = createRequestResponse(method, path, description = "OK")
+        sendMessage(client, response)
+        false
+      case "PUT" =>
+        println(">>> PUT")
+        val response = createRequestResponse(method, path, description = "OK")
+        sendMessage(client, response)
+        false
+      case "DELETE" =>
+        println(">>> DELETE")
+        val response = createRequestResponse(method, path, description = "OK")
+        sendMessage(client, response)
+        false
+      case "POST" =>
+        println(">>> POST")
+        val response = createRequestResponse(method, path, description = "OK")
+        sendMessage(client, response)
+        false
+    }
+  }
+
   def sendMessage(client: Socket, message: String): Unit = {
     Using(new PrintWriter(client.getOutputStream, true)) { out =>
       //println(s"We check of the Socket is still open, is Socket open in sendMessage? ${client.isConnected()}")
@@ -147,24 +158,23 @@ case class EchoServer(server: ServerSocket) {
     true
   }
 
+  def messageIsRequest(message: String): Boolean = { // very basic test of the request, can be easily miss-route
+    val list_method: List[String] = List("GET", "PUT", "DELETE", "POST")
+    val split = message.split(" ")
+    if(split.length == 1) return false
+    val method = split.apply(0)
+    if(list_method.contains(method)) true
+    else false
+  }
 
-//  def messageIsRequest(message: String): Boolean = { // very basic test of the request, can be easily miss-routed
-//
-//    val list_method: List[String] = List("GET", "PUT", "DELETE", "POST")
-//    val split = message.split(" ")
-//    val method = split.apply(0)
-//    if(list_method.contains(method)) true
-//    else false
-//  }
-
-    def messageIsNameRequest(message: String): Boolean = { // very basic test of the request, can be easily miss-routed
-
-      val splitMethod = message.split(" ")
-      val method = splitMethod.apply(0)
-      val name = splitMethod.apply(1)
-      if (method == "GET" && name == "name") true
-      else false
-    }
+  def messageIsNameRequest(message: String): Boolean = { // very basic test of the request, can be easily miss-routed
+    val split = message.split(" ")
+    if (split.length == 1) return false
+    val method = split.apply(0)
+    val name = split.apply(1)
+    if (method == "GET" && name == "name") true
+    else false
+  }
 
   def createRequestResponse(code: String, path: String, description: String): String = {
     val timeInMillis = System.currentTimeMillis()
@@ -172,9 +182,6 @@ case class EchoServer(server: ServerSocket) {
     val requestResponse: String = s"HTTP/1.1 \"$code\" \"$path\" Date: \"$currentDate\" Content-Type: plain/text Content: \"$description\""
     requestResponse
   }
-
-
-
 
   /* commented for now
   def get(request: WebRequest): WebResponse = request.toWebResponse
