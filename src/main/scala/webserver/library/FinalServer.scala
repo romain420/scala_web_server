@@ -2,14 +2,14 @@ package webserver.library
 
 import webserver.library.{SimpleWebService, WebRequest, WebResponse}
 
-import java.net.{InetAddress, ServerSocket, Socket}
 import java.io.{BufferedReader, InputStreamReader, PrintWriter}
-import scala.io.Source
-import scala.util.{Failure, Success, Try, Using}
-import scala.util.control.Breaks.*
+import java.net.{InetAddress, ServerSocket, Socket}
 import java.time.Instant
+import scala.io.Source
+import scala.util.control.Breaks.*
+import scala.util.{Failure, Success, Try, Using}
 
-case class EchoServer(server: ServerSocket) {
+case class FinalServer(server: ServerSocket, service: SimpleWebService) {
 
   def startRec(): Unit = {
     val localhost: InetAddress = InetAddress.getLocalHost
@@ -111,36 +111,28 @@ case class EchoServer(server: ServerSocket) {
 
   def handleRequest(client: Socket, request: String): Boolean = {
     val split = request.split(" ")
-    val path = split.apply(1)
     val method = split.apply(0)
-    method match {
+    val web_request: WebRequest = stringToRequest(request)
+    val web_response = method match {
       case "GET" =>
-        println(">>> GET")
-        val response = createRequestResponse(method, path, description = "OK")
-        sendMessage(client, response)
-        false
+        service.get(web_request)
       case "PUT" =>
-        println(">>> PUT")
-        val response = createRequestResponse(method, path, description = "OK")
-        sendMessage(client, response)
-        false
+        service.put(web_request)
       case "DELETE" =>
-        println(">>> DELETE")
-        val response = createRequestResponse(method, path, description = "OK")
-        sendMessage(client, response)
-        false
+        service.delete(web_request)
       case "POST" =>
-        println(">>> POST")
-        val response = createRequestResponse(method, path, description = "OK")
-        sendMessage(client, response)
-        false
+        service.post(web_request)
     }
+    val response: String = web_response.toString
+    sendMessage(client, response)
+    false
   }
 
   def sendMessage(client: Socket, message: String): Unit = {
     Using(new PrintWriter(client.getOutputStream, true)) { out =>
-      println(s">>> we are about to send the following message back:\n\t\"$message\"")
+      println(s">>> we are about to send the following message back:\n\"$message\"")
       out.println(message)
+      println(">>> message sent")
     }.fold(
       error => {
         println(">>> 500: Internal Server Error ")
@@ -150,6 +142,17 @@ case class EchoServer(server: ServerSocket) {
       _ => ()
     )
     ()
+  }
+
+  def stringToRequest(request: String): WebRequest = {
+    val split = request.split(" ")
+    val method = split.apply(0)
+    val path = split.apply(1)
+    val version = split.apply(2)
+    val host = split.apply(4)
+    val message = split.apply(6)
+    val res: WebRequest = WebRequest(method, path, version, host, message)
+    res
   }
 
   def closeServer(): Boolean = {
@@ -186,25 +189,25 @@ case class EchoServer(server: ServerSocket) {
     val to_add = in.readLine()
     if(in.ready() && to_add != null) {
       if(response == "") {
-        val resp = to_add
+        val resp = to_add + "\r\n"
         readAllBuffer(resp, in)
       }
       else {
-        val resp = response + " " + to_add
+        val resp = response + " " + to_add + "\r\n"
         readAllBuffer(resp, in)
       }
     } else if(to_add != null) {
       if (response == "") {
-        to_add
+        to_add + "\r\n"
       }
       else {
-        response + " " + to_add
+        response + " " + to_add + "\r\n"
       }
     }
     else response
   }
 }
 
-object EchoServer {
-  def apply(port:Int): EchoServer = EchoServer(new ServerSocket(port))
+object FinalServer {
+  def apply(port: Int, service: SimpleWebService): FinalServer = FinalServer(new ServerSocket(port), service)
 }
