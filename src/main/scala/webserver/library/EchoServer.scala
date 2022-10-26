@@ -1,16 +1,17 @@
 package webserver.library
 
 import webserver.library.{WebRequest, WebResponse}
-import java.net.{ServerSocket, Socket, InetAddress}
-import java.io.{BufferedReader, PrintWriter, InputStreamReader}
+
+import java.net.{InetAddress, ServerSocket, Socket}
+import java.io.{BufferedReader, InputStreamReader, PrintWriter}
 import scala.io.Source
-import scala.util.{Using, Try, Success, Failure}
-import scala.util.control.Breaks._
+import scala.util.{Failure, Success, Try, Using}
+import scala.util.control.Breaks.*
 import java.time.Instant
 
 case class EchoServer(server: ServerSocket) {
 
-  def start_rec(): Unit = {
+  def startRec(): Unit = {
     val localhost: InetAddress = InetAddress.getLocalHost
     val localIpAddress: String = localhost.getHostAddress
     val servPort: Int = server.getLocalPort
@@ -25,7 +26,7 @@ case class EchoServer(server: ServerSocket) {
     connexion match {
       case Success(res) =>
         if (res) ()
-        else start_rec()
+        else startRec()
       case Failure(res) =>
         println(">>> 500: Internal Server Error ")
         println(s">>> client connection failure: ${res.getMessage}")
@@ -35,6 +36,7 @@ case class EchoServer(server: ServerSocket) {
 
   def processMessage(client: Socket): Boolean = {
     Using(new BufferedReader(new InputStreamReader(client.getInputStream))) { in =>
+      val lines = readAllBuffer("", in)
       val message = in.readLine
       val isRequest = messageIsRequest(message)
       val isNameRequest = messageIsNameRequest(message)
@@ -139,7 +141,6 @@ case class EchoServer(server: ServerSocket) {
 
   def sendMessage(client: Socket, message: String): Unit = {
     Using(new PrintWriter(client.getOutputStream, true)) { out =>
-      //println(s"We check of the Socket is still open, is Socket open in sendMessage? ${client.isConnected()}")
       println(s">>> we are about to send the following message back:\n\t\"$message\"")
       out.println(message)
     }.fold(
@@ -181,6 +182,15 @@ case class EchoServer(server: ServerSocket) {
     val currentDate = Instant.ofEpochMilli(timeInMillis)
     val requestResponse: String = s"HTTP/1.1 \"$code\" \"$path\" Date: \"$currentDate\" Content-Type: plain/text Content: \"$description\""
     requestResponse
+  }
+
+  def readAllBuffer(response: String, in: BufferedReader): String = {
+    val to_add: String = in.readLine
+    if(to_add != null) {
+      val resp: String = response + to_add
+      readAllBuffer(resp, in)
+    }
+    else response
   }
 
   /* commented for now
