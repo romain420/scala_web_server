@@ -17,7 +17,7 @@ case class EchoServer(server: ServerSocket) {
     val servPort: Int = server.getLocalPort
 
     println(s"\nWaiting for a new client to connect...")
-    println(s"\r\nServer adress:\n\t$localIpAddress:$servPort")
+    println(s"\r\nServer address:\n\t$localIpAddress:$servPort")
     println(s"\tLocalhost:$servPort\n")
 
     val connexion = Using(server.accept()) { client =>
@@ -37,15 +37,15 @@ case class EchoServer(server: ServerSocket) {
   def processMessage(client: Socket): Boolean = {
     Using(new BufferedReader(new InputStreamReader(client.getInputStream))) { in =>
       val message = readAllBuffer("", in)
+      println(s">>> received message:\n\"$message\"")
       val isRequest = messageIsRequest(message)
       val isNameRequest = messageIsNameRequest(message)
       println(s">>> I received the following message:\t\"$message\"")
       println(s">>> is this detected as a request? $isRequest")
       println(s">>> is this detected as a nameRequest? $isNameRequest")
-      //println(s"We check of the Socket is still open, is Socket open in processMessage? ${client.isConnected()}")
-      if (isNameRequest) {
+      if(isNameRequest) {
         handleNameRequest(client, message)
-      } else if (isRequest) {
+      } else if(isRequest) {
         handleRequest(client, message)
       } else {
         handleMessage(client, message)
@@ -184,11 +184,24 @@ case class EchoServer(server: ServerSocket) {
   }
 
   def readAllBuffer(response: String, in: BufferedReader): String = {
-
-    lazy val to_add = in.readLine()
+    val to_add = in.readLine()
+    println(s"in reader, to_add=$to_add")
     if(in.ready() && to_add != null) {
-      val resp = response + " " + to_add
-      readAllBuffer(resp, in)
+      if(response == "") {
+        val resp = to_add
+        readAllBuffer(resp, in)
+      }
+      else {
+        val resp = response + " " + to_add
+        readAllBuffer(resp, in)
+      }
+    } else if(to_add != null) {
+      if (response == "") {
+        to_add
+      }
+      else {
+        response + " " + to_add
+      }
     }
     else response
   }
