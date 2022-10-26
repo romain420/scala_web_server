@@ -36,8 +36,7 @@ case class EchoServer(server: ServerSocket) {
 
   def processMessage(client: Socket): Boolean = {
     Using(new BufferedReader(new InputStreamReader(client.getInputStream))) { in =>
-      val lines = readAllBuffer("", in)
-      val message = in.readLine
+      val message = readAllBuffer("", in)
       val isRequest = messageIsRequest(message)
       val isNameRequest = messageIsNameRequest(message)
       println(s">>> I received the following message:\t\"$message\"")
@@ -185,9 +184,10 @@ case class EchoServer(server: ServerSocket) {
   }
 
   def readAllBuffer(response: String, in: BufferedReader): String = {
-    val to_add: String = in.readLine
-    if(to_add != null) {
-      val resp: String = response + to_add
+
+    lazy val to_add = in.readLine()
+    if(in.ready() && to_add != null) {
+      val resp = response + " " + to_add
       readAllBuffer(resp, in)
     }
     else response
