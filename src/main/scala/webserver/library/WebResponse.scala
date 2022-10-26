@@ -1,19 +1,20 @@
 package webserver.library
 
-case class WebResponse(method: String, path: String, version: String, host: String, message: String) {
+import java.time.Instant
+
+case class WebResponse(version: String, code: String, status:String, date: Instant, message: String) {
 
   override def toString: String = {
-    val str: String = method + " " + path + " " + version + "\r\n" + "Host: " + host + "\r\n" + "\r\n" + message
+    val str: String = version + " " + code + " " + status + "\r\n" + "Date: " + date + "\r\n" + "Content-Type: plain/text" + "\r\n" + "\r\n" + status + "\r\n" + message
     str
   }
 
   def debugMembers(): Unit = {
-    println("---------------\nDescription of the WebRequest:")
-    println(s"method: $method")
-    println(s"path: $path")
+    println("---------------\nDescription of the WebResponse:")
     println(s"version: $version")
-    println(s"host: $host")
-    println(s"message: $message")
+    println(s"code: $code")
+    println(s"status: $status")
+    println(s"date: $date")
     println("---------------")
   }
 }

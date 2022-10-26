@@ -4,8 +4,15 @@ import webserver.library.{Client, EchoServer, FinalServer, Server, SimpleWebServ
 
 val server_port: Int = 8000
 
+
+
 @main def finalServer(): Unit =
-  val myWebService: SimpleWebService = ???
+  val myWebService: SimpleWebService = new SimpleWebService {   // very basic implementation of a service, that just gives back a WebResponse
+    def get(request: WebRequest): WebResponse = request.toWebResponse("200", "OK", request.message)
+    def post(request: WebRequest): WebResponse = request.toWebResponse("200", "OK", request.message)
+    def put(request: WebRequest): WebResponse = request.toWebResponse("200", "OK", request.message)
+    def delete(request: WebRequest): WebResponse = request.toWebResponse("200", "OK", request.message)
+  }
   val myFinalServer = FinalServer(server_port, myWebService)
   myFinalServer.startRec()
 
@@ -13,6 +20,14 @@ val server_port: Int = 8000
   val myRecServer = EchoServer(server_port)
   myRecServer.startRec()
 
+@main def requestClient(): Unit =
+  val fourthClient = Client("localhost", server_port, "useless message")
+  fourthClient.createSendRequest()
+
+
+
+
+// TESTS
 @main def serverTestSide(): Unit =      // one time use
   val myServer = Server(server_port)
   myServer.start
@@ -34,10 +49,6 @@ val server_port: Int = 8000
   val client2 =  Client("localhost", server_port, "client2")
   client1.start()
   client2.start()
-
-@main def requestClient(): Unit =
-  val fourthClient = Client("localhost", server_port, "useless message")
-  fourthClient.createSendRequest()
 
 @main def nameRequestClient(): Unit =
   val fifthClient = Client("localhost", server_port, "Bienvenue sur le serv")

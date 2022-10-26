@@ -24,11 +24,10 @@ case class Client(ip: String, port: Int, message: String) {
 
     Using(new PrintWriter(serverSocket.getOutputStream, true)) { out =>
       out.println(message)
-      println(s">>> message sent to server:")
-      println(s"$message")
+      println(s">>> message sent to server")
       Using(new BufferedReader(InputStreamReader(serverSocket.getInputStream))) { in =>
-        val answer: String = in.readLine
-        println(s">>> we got an answer from server:\n\t\"$answer\"")
+        val answer: String = readAllBuffer("", in)
+        println(s">>> we got an answer from server:\n\"$answer\"")
       }.fold(
         error => {
           println(s">>> 404: Page not found")
@@ -94,7 +93,7 @@ case class Client(ip: String, port: Int, message: String) {
     val path = "/users"
     val version = "HTTP/1.1"
     val host = "localhost"
-    val message = "random message"
+    val message = "random_message"
     val request = WebRequest(method, path, version, host, message)
     request
   }
@@ -106,5 +105,27 @@ case class Client(ip: String, port: Int, message: String) {
     val host = "localhost"
     val request = WebRequest(method, path, version, host, name)
     request
+  }
+
+  def readAllBuffer(response: String, in: BufferedReader): String = {
+    val to_add = in.readLine()
+    if (in.ready() && to_add != null) {
+      if (response == "") {
+        val resp = to_add + "\r\n"
+        readAllBuffer(resp, in)
+      }
+      else {
+        val resp = response + " " + to_add + "\r\n"
+        readAllBuffer(resp, in)
+      }
+    } else if (to_add != null) {
+      if (response == "") {
+        to_add + "\r\n"
+      }
+      else {
+        response + " " + to_add + "\r\n"
+      }
+    }
+    else response
   }
 }

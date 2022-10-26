@@ -115,16 +115,12 @@ case class FinalServer(server: ServerSocket, service: SimpleWebService) {
     val web_request: WebRequest = stringToRequest(request)
     val web_response = method match {
       case "GET" =>
-        println(">>> GET")
         service.get(web_request)
       case "PUT" =>
-        println(">>> PUT")
         service.put(web_request)
       case "DELETE" =>
-        println(">>> DELETE")
         service.delete(web_request)
       case "POST" =>
-        println(">>> POST")
         service.post(web_request)
     }
     val response: String = web_response.toString
@@ -134,8 +130,9 @@ case class FinalServer(server: ServerSocket, service: SimpleWebService) {
 
   def sendMessage(client: Socket, message: String): Unit = {
     Using(new PrintWriter(client.getOutputStream, true)) { out =>
-      println(s">>> we are about to send the following message back:\n\t\"$message\"")
+      println(s">>> we are about to send the following message back:\n\"$message\"")
       out.println(message)
+      println(">>> message sent")
     }.fold(
       error => {
         println(">>> 500: Internal Server Error ")
@@ -152,9 +149,8 @@ case class FinalServer(server: ServerSocket, service: SimpleWebService) {
     val method = split.apply(0)
     val path = split.apply(1)
     val version = split.apply(2)
-    val host = split.apply(3)
-    val message = split.apply(4)
-    println(s"in stringToRequest\n$method  $path  $version  $host  $message")
+    val host = split.apply(4)
+    val message = split.apply(6)
     val res: WebRequest = WebRequest(method, path, version, host, message)
     res
   }
@@ -193,19 +189,19 @@ case class FinalServer(server: ServerSocket, service: SimpleWebService) {
     val to_add = in.readLine()
     if(in.ready() && to_add != null) {
       if(response == "") {
-        val resp = to_add
+        val resp = to_add + "\r\n"
         readAllBuffer(resp, in)
       }
       else {
-        val resp = response + " " + to_add
+        val resp = response + " " + to_add + "\r\n"
         readAllBuffer(resp, in)
       }
     } else if(to_add != null) {
       if (response == "") {
-        to_add
+        to_add + "\r\n"
       }
       else {
-        response + " " + to_add
+        response + " " + to_add + "\r\n"
       }
     }
     else response
