@@ -1,10 +1,17 @@
 package webserver
 
-import webserver.library.{Client, Server, WebResponse, WebRequest, EchoServer, Test}
+import webserver.library.{Client, EchoServer, FinalServer, Server, SimpleWebService, Test, WebRequest, WebResponse}
 
 val server_port: Int = 8000
 
+@main def finalServer(): Unit =
+  val myWebService: SimpleWebService = ???
+  val myFinalServer = FinalServer(server_port, myWebService)
+  myFinalServer.startRec()
 
+@main def recServer(): Unit =
+  val myRecServer = EchoServer(server_port)
+  myRecServer.startRec()
 
 @main def serverTestSide(): Unit =      // one time use
   val myServer = Server(server_port)
@@ -35,11 +42,6 @@ val server_port: Int = 8000
 @main def nameRequestClient(): Unit =
   val fifthClient = Client("localhost", server_port, "Bienvenue sur le serv")
   fifthClient.createSendNameRequest("JM-Tech")
-
-
-@main def recServer(): Unit =
-  val myRecServer = EchoServer(server_port)
-  myRecServer.startRec()
 
 
 
