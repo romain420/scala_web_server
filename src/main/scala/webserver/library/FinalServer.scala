@@ -28,7 +28,6 @@ case class FinalServer(server: ServerSocket, service: SimpleWebService) {
         if (res) ()
         else startRec()
       case Failure(res) =>
-        println(">>> 500: Internal Server Error ")
         println(s">>> client connection failure: ${res.getMessage}")
     }
     ()
@@ -51,7 +50,6 @@ case class FinalServer(server: ServerSocket, service: SimpleWebService) {
       }     // and if it is not a request, so a lambda message...
     }.fold(
       error => {
-        println(">>> 500: Internal Server Error ")
         println(s">>> cannot acquire the 'in', check the inputSteam of server: ${error.getMessage}")
         closeServer()
       },
@@ -135,7 +133,6 @@ case class FinalServer(server: ServerSocket, service: SimpleWebService) {
       println(">>> message sent")
     }.fold(
       error => {
-        println(">>> 500: Internal Server Error ")
         println(s">>> could not send the message, check the OutputStream of server: ${error.getMessage}")
         closeServer()
       },
