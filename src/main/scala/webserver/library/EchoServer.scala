@@ -37,10 +37,9 @@ case class EchoServer(server: ServerSocket) {
   def processMessage(client: Socket): Boolean = {
     Using(new BufferedReader(new InputStreamReader(client.getInputStream))) { in =>
       val message = readAllBuffer("", in)
-      println(s">>> received message:\n\"$message\"")
       val isRequest = messageIsRequest(message)
       val isNameRequest = messageIsNameRequest(message)
-      println(s">>> I received the following message:\t\"$message\"")
+      println(s">>> I received the following message:\n\"$message\"")
       println(s">>> is this detected as a request? $isRequest")
       println(s">>> is this detected as a nameRequest? $isNameRequest")
       if(isNameRequest) {
