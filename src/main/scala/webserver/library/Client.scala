@@ -9,9 +9,11 @@ case class Client(ip: String, port: Int, message: String) {
 
   def start(): Unit = {
     Using(new Socket(ip, port)) { serverSocket =>
+      println(s">>> 200: OK")
       processCommunication(serverSocket, message)
     }.fold(
       error => {
+        println(s">>> Error 404: Page not found")
         println(s"Could not connect to the server, please check the Socket(ip and port) on the client side or that the server is on :). Error: ${error.getMessage}")
       },
       _ => ()
@@ -28,12 +30,14 @@ case class Client(ip: String, port: Int, message: String) {
         println(s">>> we got an answer from server:\n\"$answer\"")
       }.fold(
         error => {
+          println(s">>> 404: Page not found")
           println(s">>> cannot acquire the 'in', check the inputSteam of client: ${error.getMessage}")
         },
         _ => ()
       )
     }.fold(
       error => {
+        println(s">>> 405: Method Not Allowed")
         println(s">>> could not send the message, check the 'out' of client: ${error.getMessage}")
       },
       _ => ()
@@ -47,9 +51,11 @@ case class Client(ip: String, port: Int, message: String) {
     val requestString: String = request.toString
 
     Using(new Socket(ip, port)) { serverSocket =>
+      println(s">>> 200: OK")
       processCommunication(serverSocket, requestString)
     }.fold(
       error => {
+        println(s">>> 404: Page not found")
         println(s"Could not connect to the server, please check the Socket(ip and port) on the client side or that the server is on :). Error: ${error.getMessage}")
       },
       _ => ()
@@ -62,9 +68,11 @@ case class Client(ip: String, port: Int, message: String) {
     val requestString: String = request.toString
 
     Using(new Socket(ip, port)) { serverSocket =>
+      println(s">>> 200: OK")
       processCommunication(serverSocket, requestString)
     }.fold(
       error => {
+        println(s">>> 404: Page not found")
         println(s"Could not connect to the server, please check the Socket(ip and port) on the client side or that the server is on :). Error: ${error.getMessage}")
       },
       _ => ()
