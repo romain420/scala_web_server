@@ -184,7 +184,6 @@ case class EchoServer(server: ServerSocket) {
 
   def readAllBuffer(response: String, in: BufferedReader): String = {
     val to_add = in.readLine()
-    println(s"in reader, to_add=$to_add")
     if(in.ready() && to_add != null) {
       if(response == "") {
         val resp = to_add
