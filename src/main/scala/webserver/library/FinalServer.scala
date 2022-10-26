@@ -111,7 +111,7 @@ case class FinalServer(server: ServerSocket, service: SimpleWebService) {
     val split = request.split(" ")
     val method = split.apply(0)
     val web_request: WebRequest = stringToRequest(request)
-    val web_response = method match {
+    val webResponse = method match {
       case "GET" =>
         service.get(web_request)
       case "PUT" =>
@@ -121,7 +121,7 @@ case class FinalServer(server: ServerSocket, service: SimpleWebService) {
       case "POST" =>
         service.post(web_request)
     }
-    val response: String = web_response.toString
+    val response: String = webResponse.toString
     sendMessage(client, response)
     false
   }
@@ -147,7 +147,7 @@ case class FinalServer(server: ServerSocket, service: SimpleWebService) {
     val path = split.apply(1)
     val version = split.apply(2)
     val host = split.apply(4)
-    val message = split.apply(6)
+    val message = split.apply(7)
     val res: WebRequest = WebRequest(method, path, version, host, message)
     res
   }

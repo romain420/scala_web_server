@@ -6,7 +6,7 @@ import webserver.library.WebResponse
 case class WebRequest(method: String, path: String, version: String, host: String, message: String) {
 
   override def toString: String = {
-    val str: String = method + " " + path + " " + version + "\r\n" + "Host: " + host + "\r\n" + "\r\n" + message
+    val str: String = method + " " + path + " " + version + " \r\n" + "Host: " + host + "\r\n" + "\r\n" + message
     str
   }
 
